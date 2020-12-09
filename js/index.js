@@ -7,18 +7,19 @@ let avatarUrl;
 let socket = null;
 let userInfo = null;
 let currentContact = null;
+let connectedUsers = [];
+
 
 // limpiar session storage
 sessionStorage.clear();
 
 // mostrar pantalla de login
 const loginScreen = () => {
-   
     if (socket) {
         socket.close()
     }
     document.getElementById('main-container').classList.add('d-none');
-    button.addEventListener('click', async (e) => {
+    button.addEventListener('click', async () => {
         username = document.getElementById('username').value;
         if (username.trim() === '') return;
 
@@ -38,38 +39,98 @@ const chatScreen = () => {
         document.getElementById('messages').innerHTML = null;
         if (sessionStorage.getItem(user)) {
             JSON.parse(sessionStorage.getItem(user)).forEach(m => {
-                document.getElementById('messages').innerHTML +=
-                    `<div class="row d-flex ${user !== m.user ? 'justify-content-end' : ''}">
-                            <div class="col-6">
-                                <div class="alert ${user !== m.user ? 'alert-primary' : 'alert-secondary'}" role="alert">
-                                    ${m.msg.msg}
+                    
+                    if (m.msg.type === 'text') {
+                        document.getElementById('messages').innerHTML +=
+                        `<div class="row d-flex ${user !== m.user ? 'justify-content-end' : ''}">
+                                <div class="col-6">
+                                    <div class="alert ${user !== m.user ? 'alert-primary bg-green-secondary' : 'alert-secondary dark-secondary'}" role="alert">
+                                        <p>${m.msg.msg}</p>
+                                        <div class="w-100 d-flex justify-content-end">
+                                            <span class="text-white">${m.msg.hour}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>`
-                    ;
+                            </div>`
+                        ;
+                    } else if (m.msg.type === 'location'){
+                        var img_url = "https://maps.googleapis.com/maps/api/staticmap" +
+                        "?center=" + m.msg.msg.lat + "," + m.msg.msg.lng +
+                        "&zoom=14" +
+                        "&size=400x300" +
+                        "&key=AIzaSyCv9VAsM4KzjDdvuV2CzFAMuazqOfqFlgM";
+
+                        document.getElementById('messages').innerHTML +=
+                        `<div class="row d-flex ${user !== m.user ? 'justify-content-end' : ''}">
+                                <div class="col-6">
+                                    <div class="alert ${user !== m.user ? 'alert-primary bg-green-secondary' : 'alert-secondary dark-secondary'}" role="alert">
+                                        <img src="${img_url}" class="img-fluid"/>
+                                        <div class="w-100 d-flex justify-content-end">
+                                            <span class="text-white">${m.msg.hour}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`
+                        ;
+                    }
+                
+                
             })
         }
     }
+
+    // enviar mensajes
+    const sendMessage = (user, type, message, hour) => {
+
+        if (type==='text') {
+            if (message.trim() === '') return;
+        }
+        
+
+        const aux = sessionStorage.getItem(user) ? JSON.parse(sessionStorage.getItem(user)) : [];
+        sessionStorage.removeItem(user);
+        aux.push({
+            user: userInfo.id,
+            msg: {
+                type,
+                msg: message,
+                hour
+            }
+        });
+        updateScroll();
+
+        sessionStorage.setItem(user, JSON.stringify(aux));
+       
+        document.getElementById('msjEnviar').value = "";
+
+        socket.emit('pmsg', user, {
+            type,
+            msg: message,
+            user: userInfo,
+            hour
+        });
+    }
+
     // mostrar los usuarios conectados
     const listUsers = (data) => {
         let usuarios = data.filter(u => u.id !== userInfo.id);
         document.getElementById('contactList').innerHTML = null;
         
-
         usuarios.forEach(u => {
-            
             document.getElementById('contactList').innerHTML +=
                 `<li class="d-flex mt-3 p-3" id=${u.id}>
                     <img src="${u.avatar}" alt="" class="contact-img" data-user=${u.id} data-name=${u.username}>
                     <div class="contact" data-user=${u.id}>
                         <p class="p-0 m-0 fw-bold text-white">${u.username}</p>
-                        <p class="p-0 m-0 text-muted border-bottom pb-2 border-secondary">Lorem ipsum dolor sit amet consectetur.</p>
                     </div>
                 </li>`;
-        });
+            }
+        );
 
         document.querySelectorAll('.contact').forEach(i => {
             i.addEventListener('click', (e) => {
+                document.getElementById('blank-section').classList.add('d-none');
+                document.getElementById('chat-section').classList.remove('d-none');
                 // quitar el color de notificación
                 document.getElementById(i.dataset.user).classList.remove('bg-notification');
                 currentContact = i.dataset.user;
@@ -82,56 +143,38 @@ const chatScreen = () => {
                     }
                 });
 
-               
 
                 // mostrar mensajes anteriores
                 showMessages(i.dataset.user);
 
                 // enviar un mensaje
-
                 document.getElementById('btnEnviar').onclick = () => {
                     const message = document.getElementById('msjEnviar').value;
-
-                    if (message.trim() === '') return;
-
-                    const aux = sessionStorage.getItem(i.dataset.user) ? JSON.parse(sessionStorage.getItem(i.dataset.user)) : [];
-                    sessionStorage.removeItem(i.dataset.user);
-                    aux.push({
-                        user: userInfo.id,
-                        msg: {
-                            type: 'text',
-                            msg: message
-                        }
-                    });
-
-                    sessionStorage.setItem(i.dataset.user, JSON.stringify(aux));
-
-                    document.getElementById('messages').innerHTML +=
-                        `<div class="row d-flex justify-content-end">
-                            <div class="col-6">
-                                <div class="alert alert-primary" role="alert">
-                                    ${message}
-                                </div>
-                            </div>
-                        </div>`
-                        ;
-                    document.getElementById('msjEnviar').value = "";
-
-                    socket.emit('pmsg', i.dataset.user, {
-                        type: 'text',
-                        msg: message,
-                        user: userInfo
-                    });
+                    sendMessage(i.dataset.user, 'text', message, moment().format('HH:mm'));
+                    showMessages(i.dataset.user);
                 }
-                //hola
+
+                document.getElementById('msjEnviar').onkeyup = (e) => {
+                    const message = document.getElementById('msjEnviar').value;
+                    if (e.key === 'Enter') {
+                        sendMessage(i.dataset.user, 'text', message, moment().format('HH:mm'));
+                        showMessages(i.dataset.user);
+                    }
+                }
+
                 //boton obtener ubicación
                 document.getElementById('btnEnviarUbicacion').onclick = () => {
                     if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(mostrarPos,err)
+                        navigator.geolocation.getCurrentPosition(pos => {
+                          let ubicacion={
+                              lat:pos.coords.latitude,
+                              lng:pos.coords.longitude
+                          }
+                          console.log(JSON.stringify(ubicacion));
+                          sendMessage(i.dataset.user,'location',ubicacion, moment().format('HH:mm'));
+                          showMessages(i.dataset.user);
+                        }, err)
                     }
-                }
-                function mostrarPos(pos) {
-                        alert(pos.coords.latitude + ","+pos.coords.longitude );
                 }
                 function err(error) {
                     switch (error.code) {
@@ -154,6 +197,8 @@ const chatScreen = () => {
         })
     }
 
+    
+
     // hacer visible el chat y ocultr el login
     document.getElementById('login-container').classList.add('d-none');
     document.getElementById('main-container').classList.remove('d-none');
@@ -175,6 +220,7 @@ const chatScreen = () => {
     // escuchar a los usuarios que se conectan
     socket.on('connected', (data) => {
         listUsers(data);
+        connectedUsers = data;
     });
 
 
@@ -189,9 +235,11 @@ const chatScreen = () => {
     socket.on('username', (data) => {
         userInfo = data;
         listUsers(data.users);
+        connectedUsers = data.users;
     });
 
     socket.on('pmsg', (socketId, msg) => {
+        updateScroll();
         const aux = sessionStorage.getItem(socketId) ? JSON.parse(sessionStorage.getItem(socketId)) : [];
         sessionStorage.removeItem(socketId);
         aux.push({
@@ -202,10 +250,11 @@ const chatScreen = () => {
         if (currentContact === socketId) {
             showMessages(socketId);
         } else {
+            
             document.getElementById(socketId).classList.add('bg-notification');
             if (!('Notification' in window)) {
                 alert('Tu navegador no soporta las notificaciones');
-            } 
+            }
             else if (Notification.permission === 'granted') {
                 const notification = new Notification('Nuevo mensaje');
             }
@@ -217,9 +266,13 @@ const chatScreen = () => {
                 });
             }
         }
-
     });
-
 }
 
 loginScreen();
+
+function updateScroll(event){
+    let messages = document.getElementById('messages');
+    // messages.scrollIntoView(false);
+    messages.scrollTop = messages.scrollHeight - 148// - (messages.clientHeight - 120);
+}

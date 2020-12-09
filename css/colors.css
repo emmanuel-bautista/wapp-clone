@@ -18,3 +18,7 @@
 .bg-notification {
     background: rgb(50,55,57);
 }
+
+.bg-green-secondary {
+    background-color: rgb(5, 97, 98);
+}

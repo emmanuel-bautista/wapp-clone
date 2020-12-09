@@ -1,15 +1,40 @@
 .height-60 {
-    height: 60px;
+    height: 70px;
 }
 .nav-heigth{
-    height: 150px;
+    height: 50px;
+}
+
+.contact {
+    padding: 10px 5px ;
+    width: 100%;
+}
+
+.contact-list > li:hover{
+    background: rgb(42, 47, 50);
+    transform: scale(1.1);
 }
 
 .contact-section {
-    width: 30%;
-    height: calc(100vh - 60px);
-    max-height: calc(100vh - 60px);
+    min-width: 25%;
+    height: calc(100vh - 0px);
+    max-height: calc(100vh - 0px);
     overflow-y: scroll;
+}
+
+.contact-section::-webkit-scrollbar {
+    width: 5px;     /* Tamaño del scroll en vertical */
+    height: 5px;    /* Tamaño del scroll en horizontal */
+}
+
+.contact-section::-webkit-scrollbar-thumb {
+    background: rgb(42, 47, 50);
+    border-radius: 4px;
+}
+
+.contact-section::-webkit-scrollbar-track {
+    background: rgb(15, 22, 26);
+    border-radius: 4px;
 }
 
 .contact-list > li {
@@ -17,11 +42,14 @@
     cursor: pointer;
     width: 100%;
     padding: 10px;
+    transition: all ease .3s;
+    
 }
 
+
 .chat-section {
-    width: 70%;
-    background: url(https://i.pinimg.com/originals/1c/ec/e4/1cece43006d542fca782296a19fbaa47.png);
+    min-width: 75%;
+   
     height: calc(100vh - 60px);
     max-height: calc(100vh - 60px);
     position: relative;
@@ -32,7 +60,7 @@
    background-color: rgb(36, 33, 33);
     height: calc(100vh - 60px);
     max-height: calc(100vh - 60px);
-    position: relative;
+    
 }
 
 .contact-list {
@@ -49,8 +77,6 @@
 }
 
 .input-message {
-    position: absolute;
-    bottom: 0;
     width: 100%;
     padding: 15px;
     display:flex;
@@ -65,4 +91,44 @@
     height: 40px;
     padding: 15px;
     margin-right: 10px;
+    background: rgb(19, 28, 33);
+    color: white;
+    outline: none;
+}
+
+
+.input-message > i {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 50%;
+}
+
+.msg-section {
+    max-height: calc(100vh - 140px); 
+    min-height: calc(100vh - 140px); 
+    overflow-y: scroll;  
+    background: url(https://i.pinimg.com/originals/1c/ec/e4/1cece43006d542fca782296a19fbaa47.png);
+}
+
+.msg-section::-webkit-scrollbar {
+    width: 8px;     /* Tamaño del scroll en vertical */
+    height: 8px;    /* Tamaño del scroll en horizontal */
+}
+
+.msg-section::-webkit-scrollbar-thumb{
+    background: rgb(42, 47, 50);
+    border-radius: 4px;
+}
+
+.msg-section::-webkit-scrollbar-track {
+    background: rgb(15, 22, 26);
+    border-radius: 4px;
+}
+
+.alert {
+    margin-top: 15px;
+    padding: 5px 15px!important;
+    color: white;
+    border: none;
 }
