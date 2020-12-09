@@ -209,7 +209,7 @@ const chatScreen = () => {
     document.getElementById('usernametext').appendChild(textUser);
 
     // instanciar socket perrón 
-    socket = io('http://localhost:3000');
+    socket = io('https://ws-clone.herokuapp.com');
 
     // enviar usuario
     socket.emit('username', {
