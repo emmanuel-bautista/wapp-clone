@@ -123,14 +123,31 @@ const chatScreen = () => {
                         user: userInfo
                     });
                 }
+                //hola
                 //boton obtener ubicación
                 document.getElementById('btnEnviarUbicacion').onclick = () => {
                     if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(mostrarPos)
+                        navigator.geolocation.getCurrentPosition(mostrarPos,err)
                     }
                 }
                 function mostrarPos(pos) {
                         alert(pos.coords.latitude + ","+pos.coords.longitude );
+                }
+                function err(error) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            txtLocalizacion.innerHTML = "No tienes permisos de acceder a la geolocalizacion";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            txtLocalizacion.innerHTML = "No se pudo acceder a la geolicalización";
+                            break;
+                        case error.TIMEOUT:
+                            txtLocalizacion.innerHTML = "El tiempo de respuesta se agoto";
+                        case error.UKNOWN:
+                            txtLocalizacion.innerHTML = "desconocido";
+                        default:
+                            txtLocalizacion.innerHTML = "a ocurrido un error";
+                    }
                 }
 
             })
