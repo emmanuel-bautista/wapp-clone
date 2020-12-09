@@ -13,6 +13,7 @@ sessionStorage.clear();
 
 // mostrar pantalla de login
 const loginScreen = () => {
+   
     if (socket) {
         socket.close()
     }
@@ -121,6 +122,15 @@ const chatScreen = () => {
                         msg: message,
                         user: userInfo
                     });
+                }
+                //boton obtener ubicación
+                document.getElementById('btnEnviarUbicacion').onclick = () => {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(mostrarPos)
+                    }
+                }
+                function mostrarPos(pos) {
+                        alert(pos.coords.latitude + ","+pos.coords.longitude );
                 }
 
             })

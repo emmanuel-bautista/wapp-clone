@@ -27,6 +27,13 @@
     position: relative;
     
 }
+.chat-section-main{
+    width: 70%;
+   background-color: rgb(36, 33, 33);
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    position: relative;
+}
 
 .contact-list {
     list-style: none;
@@ -47,13 +54,14 @@
     width: 100%;
     padding: 15px;
     display:flex;
-    align-items:center;
+   align-items:center;
+    justify-content:space-evenly;
 }
 
 .input-message > input {
     border: none;
     border-radius: 20px;
-    width: 70%;
+    width: 80%;
     height: 40px;
     padding: 15px;
     margin-right: 10px;
