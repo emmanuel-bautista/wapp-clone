@@ -23,8 +23,8 @@ const loginScreen = () => {
         username = document.getElementById('username').value;
         if (username.trim() === '') return;
 
-        username = username.replace(/ /g, "+");
-        const data = await fetch(`https://ui-avatars.com/api/?name=${username}&background=random`);
+        const userAux = username.replace(/ /g, "+");
+        const data = await fetch(`https://ui-avatars.com/api/?name=${userAux}&background=random`);
         avatarUrl = data.url;
         chatScreen();
     });
@@ -116,12 +116,14 @@ const chatScreen = () => {
         let usuarios = data.filter(u => u.id !== userInfo.id);
         document.getElementById('contactList').innerHTML = null;
         
+        
         usuarios.forEach(u => {
+            let nombreusuario = u.username.replace('+', ' ');
             document.getElementById('contactList').innerHTML +=
                 `<li class="d-flex mt-3 p-3" id=${u.id}>
                     <img src="${u.avatar}" alt="" class="contact-img" data-user=${u.id} data-name=${u.username}>
                     <div class="contact" data-user=${u.id}>
-                        <p class="p-0 m-0 fw-bold text-white">${u.username}</p>
+                        <p class="p-0 m-0 fw-bold text-white">${nombreusuario}</p>
                     </div>
                 </li>`;
             }
@@ -209,7 +211,7 @@ const chatScreen = () => {
     document.getElementById('usernametext').appendChild(textUser);
 
     // instanciar socket perrón 
-    socket = io('https://ws-clone.herokuapp.com');
+    socket = io('https://ws-clone.herokuapp.com/');
 
     // enviar usuario
     socket.emit('username', {
