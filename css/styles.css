@@ -1,0 +1,60 @@
+.height-60 {
+    height: 60px;
+}
+.nav-heigth{
+    height: 150px;
+}
+
+.contact-section {
+    width: 30%;
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    overflow-y: scroll;
+}
+
+.contact-list > li {
+    /* padding: 15px;    */
+    cursor: pointer;
+    width: 100%;
+    padding: 10px;
+}
+
+.chat-section {
+    width: 70%;
+    background: url(https://i.pinimg.com/originals/1c/ec/e4/1cece43006d542fca782296a19fbaa47.png);
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    position: relative;
+    
+}
+
+.contact-list {
+    list-style: none;
+    margin-top: 20px;
+    padding: 0;
+}
+
+.contact-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.input-message {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px;
+    display:flex;
+    align-items:center;
+}
+
+.input-message > input {
+    border: none;
+    border-radius: 20px;
+    width: 70%;
+    height: 40px;
+    padding: 15px;
+    margin-right: 10px;
+}
